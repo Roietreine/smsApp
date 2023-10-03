@@ -3,11 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
         tools:ignore="ProtectedPermissions" />
 
@@ -38,7 +43,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".service.ActiveNotificationReceiver"
+            android:name=".service.SmsReceiver"
             android:enabled="true"
             android:exported="true">
 
@@ -46,10 +51,16 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.NOTIFICATION_RECEIVED" />
-            </intent-filter>
         </receiver>
+
+        <service android:name=".service.NotificationService"
+            android:label="Notification Listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
 
 <!--        <service android:name=".service.SmsService"-->
 <!--            android:enabled="true"-->

@@ -12,9 +12,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/toolbar_color"
+        android:background="@color/date_color"
         android:titleTextColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/messagesList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -46,7 +47,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_add"
         android:contentDescription="@string/write_a_new_message" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,14 +4,21 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
+import android.app.NotificationManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import chard.prj.smsapplication.BaseViewModel
 import chard.prj.smsapplication.databinding.ActivityMainBinding
+import chard.prj.smsapplication.service.NotificationService
 import chard.prj.smsapplication.ui.adapter.MessageAdapter
 import chard.prj.smsapplication.ui.adapter.SenderInterface
 import chard.prj.smsapplication.ui.model.MessageModel
@@ -27,13 +34,14 @@ class MainActivity : AppCompatActivity()
         BaseViewModel(application)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-
         messageList = ArrayList()
         displayMessage()
+        notificationManager()
         setContentView(binding.root)
     }
 
@@ -42,8 +50,7 @@ class MainActivity : AppCompatActivity()
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.RECEIVE_SMS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) if(
+            ) != PackageManager.PERMISSION_GRANTED ||
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_SMS
@@ -51,7 +58,7 @@ class MainActivity : AppCompatActivity()
         ) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.RECEIVE_SMS),
+                arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS),
                 REQUEST_SMS_PERMISSION
             )
             return
@@ -89,6 +96,24 @@ class MainActivity : AppCompatActivity()
             }
         }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
+    private fun notificationManager(){
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.isNotificationListenerAccessGranted(
+                ComponentName(
+                    this, NotificationService::class.java
+                )
+            )
+        ) {
+            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            startActivity(intent)
+
+            startService(Intent(this, NotificationService::class.java))
+        }
+}
 
     override fun onSenderClick(sender: String) {
         val intent = Intent(this, SenderActivity::class.java)

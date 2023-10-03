@@ -6,15 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.telephony.SmsMessage
 import android.util.Log
-import androidx.lifecycle.ViewModelProvider
-import chard.prj.smsapplication.ui.viewmodel.MessageViewModel
-import chard.prj.smsapplication.ui.model.MessageModel
+
 
 class SmsReceiver : BroadcastReceiver() {
 
-    private val messageViewModel = ViewModelProvider.AndroidViewModelFactory(Application()).create(
-        MessageViewModel::class.java
-    )
 
     override fun onReceive(context: Context?, intent: Intent?) {
         try {
@@ -30,15 +25,7 @@ class SmsReceiver : BroadcastReceiver() {
                         val sender = message?.originatingAddress ?: ""
                         val body = message?.messageBody ?: ""
                         val timestamp = message?.timestampMillis ?: System.currentTimeMillis()
-                        val smsMessage = MessageModel(sender, body, timestamp)
-                        messageViewModel.addMessage(smsMessage)
 
-                        val broadcastIntent = Intent(context, ActiveNotificationReceiver::class.java)
-                        broadcastIntent.action = "android.provider.Telephony.SMS_RECEIVED"
-                        Log.d("SmsReceiver", "Sent broadcast intent: ${broadcastIntent.action}")
-                        broadcastIntent.putExtra("sender", sender)
-                        broadcastIntent.putExtra("message", body)
-                        context?.sendBroadcast(broadcastIntent)
 
                         // Do something with the SMS message here
                         Log.d("SmsReceiver", "Received message from $sender: $body $timestamp")
